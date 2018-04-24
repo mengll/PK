@@ -21,6 +21,7 @@ func main() {
 	gv1 := e.Group("/v1/")
 	gv1.POST("user_game_result",user.GetUserGameInfo)
 	gv1.POST("game_result_list",game.GetGameResList)
+	gv1.POST("get_server_list",game.GetGameServerList)
 	e.Logger.Fatal(e.Start(":1323"))
 
 }

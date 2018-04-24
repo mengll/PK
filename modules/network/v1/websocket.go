@@ -41,7 +41,3 @@ func BroadCast(data SocketData) error {
 	return nil
 }
 
-//读取信息
-func WSread(){
-	fmt.Println("This is a file")
-}
