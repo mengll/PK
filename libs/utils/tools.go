@@ -1,37 +1,39 @@
 package utils
 
 import (
-	"net/url"
-	"fmt"
 	"crypto/md5"
-	"encoding/hex"
-	"strings"
 	"encoding/base64"
-	"math"
+	"encoding/hex"
 	"encoding/json"
-	"time"
+	"fmt"
+	"math"
+	"net/url"
+	"os"
+	"path/filepath"
 	"strconv"
+	"strings"
+	"time"
 )
 
 //时间转化函数
 const format_date = "2006-04-03 15:04:05"
 
 //urlu转码操作
-func Urlencode(str string) string{
+func Urlencode(str string) string {
 	return url.PathEscape(str)
 }
 
 //urldecode反码
-func Urldecode(str string) string{
-	vk,errp := url.PathUnescape(str)
-	if errp != nil{
-		fmt.Println("转化错误",errp)
+func Urldecode(str string) string {
+	vk, errp := url.PathUnescape(str)
+	if errp != nil {
+		fmt.Println("转化错误", errp)
 	}
 	return vk
 }
 
 //md5 32 小写
-func M5(str string) string{
+func M5(str string) string {
 	md5 := md5.New()
 	md5.Write([]byte(str))
 	mds := hex.EncodeToString(md5.Sum(nil)) // 转
@@ -39,20 +41,20 @@ func M5(str string) string{
 }
 
 //简单异或操作
-func SimpleorX(info,key []byte) string{
-	if len(info) ==0 || len(key) == 0{
+func SimpleorX(info, key []byte) string {
+	if len(info) == 0 || len(key) == 0 {
 		return ""
 	}
 	var back []byte
 	k_len := len(key)
 	d_len := len(info)
 
-	for i := 0;i < d_len;i++{
+	for i := 0; i < d_len; i++ {
 		key_len := i % k_len
-		back = append(back,info[i] ^ key[key_len])
+		back = append(back, info[i]^key[key_len])
 	}
 
-	return  base64.URLEncoding.EncodeToString(back)
+	return base64.URLEncoding.EncodeToString(back)
 }
 
 //数据类型转化 float64 to int
@@ -96,9 +98,20 @@ func GetNowTime() string {
 
 //获取当前的时间戳
 func GetTimeStamp() int {
-	t ,err := strconv.Atoi(strconv.FormatInt(time.Now().Unix(),10))
-	if err != nil{
-		fmt.Println("时间戳转化失败",err.Error())
+	t, err := strconv.Atoi(strconv.FormatInt(time.Now().Unix(), 10))
+	if err != nil {
+		fmt.Println("时间戳转化失败", err.Error())
 	}
 	return t
+}
+
+/*
+获取程序运行路径
+*/
+func GetCurrentDirectory() string {
+	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	if err != nil {
+		fmt.Println("This is an error")
+	}
+	return strings.Replace(dir, "\\", "/", -1)
 }

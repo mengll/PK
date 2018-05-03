@@ -3,10 +3,13 @@ package anfeng
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
+
+	"PK/conf"
 )
 
 //Response Http response interface
@@ -16,15 +19,33 @@ type Response interface {
 
 //Auth 安锋通行证登录
 type Auth struct {
-	BaseURL  string
-	ClientID string
+	BaseURL  string `json:"base_url"`
+	ClientID string `json:"client_id"`
 }
 
 //CIResponse 安锋CI框架API响应
 type CIResponse struct {
-	Code    int         `json:"status"`
-	Message string      `json:"info"`
-	Payload interface{} `json:"data"`
+	Code    int             `json:"status"`
+	Message string          `json:"info"`
+	Payload json.RawMessage `json:"data"`
+}
+
+//IsSuccess API响应是否成功
+func (resp *CIResponse) IsSuccess() bool {
+	return resp.Code == 1
+}
+
+//CMResponse 安锋活动API响应
+type CMResponse struct {
+	Success bool            `json:"success"`
+	Code    int             `josn:"code"`
+	Message string          `json:"message"`
+	Payload json.RawMessage `json:"payload"`
+}
+
+//IsSuccess API响应是否成功
+func (resp *CMResponse) IsSuccess() bool {
+	return resp.Success
 }
 
 //AccountProfileData 用户信息
@@ -66,11 +87,6 @@ type AccessTokenResponse struct {
 type ProfileResponse struct {
 	CIResponse
 	Payload AccountProfileData `json:"data"`
-}
-
-//IsSuccess API响应是否成功
-func (resp *CIResponse) IsSuccess() bool {
-	return resp.Code == 1
 }
 
 //AuthorizeURL 生成获取 code 的跳转链接
@@ -127,6 +143,29 @@ func (auth *Auth) Profile(accessToken string) (AccountProfileData, error) {
 	return resp.Payload, nil
 }
 
+//WeixinSDK 微信JSSDK参数
+func (auth *Auth) WeixinSDK(accessURL string) (payload json.RawMessage, err error) {
+	params := url.Values{}
+	params.Set("d", "api")
+	params.Set("c", "Wechat")
+	params.Set("m", "jssdk")
+	params.Set("url", accessURL)
+
+	resp := new(CMResponse)
+	if err = Get(auth.BaseURL, params, resp); err != nil {
+		return
+	}
+
+	if !resp.IsSuccess() {
+		err = errors.New(resp.Message)
+		return
+	}
+
+	payload = resp.Payload
+
+	return
+}
+
 //Get HTTP GET METHOD Unmarshal JSON
 func Get(url string, params url.Values, v Response) error {
 	if params != nil {
@@ -169,8 +208,21 @@ func Unmarshal(request func() (*http.Response, error), v interface{}) error {
 
 	var data []byte
 	data, err = ioutil.ReadAll(resp.Body)
+	fmt.Println(string(data))
 	if err != nil {
 		return err
 	}
 	return json.Unmarshal(data, v)
 }
+
+//New Auth
+func New(name string) (auth *Auth) {
+	auth = &Auth{}
+	if err := conf.Get(name, auth); err != nil {
+		panic(err)
+	}
+	return
+}
+
+//Default Auth
+var Default = New("auth")

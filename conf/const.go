@@ -4,13 +4,13 @@ const (
 	//玩家登陆
 	CLIENT_LOGIN_KYE string = "client_logined_game_key_%s"
 
-	GAME_REDAY_LIST  string = "READY_RANDOM:%s"
-	USER_GAME_KEY    string = "GAMEPLATFORM_USER_INFO_%s"
-	ROOM_RESULT_KEY  string = "ROOM_RESULT_KEY:%s"
-	ONLINE_KEY = "ONE_LINE:%s"
+	GAME_REDAY_LIST string = "READY_RANDOM:%s"
+	USER_GAME_KEY   string = "GAMEPLATFORM_USER_INFO_%s"
+	ROOM_RESULT_KEY string = "ROOM_RESULT_KEY:%s"
+	ONLINE_KEY             = "ONE_LINE:%s"
 
-	SUCESS_BACK      int    = 0
-	FAILED_BACK      int    = 1
+	SUCESS_BACK int = 0 //成功的时候返回
+	FAILED_BACK int = 1
 
 	START          = "af01"
 	LOGIN          = "af02"
@@ -31,6 +31,4 @@ const (
 	ONLINE         = "af17"
 	USER_MESSAGE   = "af18"
 	ENTER_GAME     = "af19"
-
-
 )

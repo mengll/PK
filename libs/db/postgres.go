@@ -1,23 +1,23 @@
 package db
 
 import (
+	"PK/conf"
 	"database/sql"
 	"fmt"
 	_ "github.com/lib/pq"
 	"strconv"
-	"PK/conf"
 )
 
 type (
 	Pg struct {
-		Db      *sql.DB
+		Db *sql.DB
 	}
 )
 
-type Pginterface interface{
+type Pginterface interface {
 	PgConnect() error
 	Pgclose()
-	Prepure(str string) (*sql.Stmt,error)
+	Prepure(str string) (*sql.Stmt, error)
 	Ping() error
 }
 
@@ -40,7 +40,6 @@ func (self *Pg) PgConnect() error {
 	}
 
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", pg.Host, port, pg.User, pg.PassWord, pg.DataBase)
-
 	self.Db, err = sql.Open("postgres", psqlInfo)
 
 	if err != nil {
@@ -63,9 +62,9 @@ func (self *Pg) Pgclose() {
 }
 
 //创建预处理语句  Prepare("insert into user(name, sex)values($1,$2)")
-func (self *Pg) Prepure(str string)(*sql.Stmt,error){
+func (self *Pg) Prepure(str string) (*sql.Stmt, error) {
 	Pgstmt, err := self.Db.Prepare(str)
-	return Pgstmt,err
+	return Pgstmt, err
 }
 
 //检查当前是链接
@@ -78,6 +77,6 @@ func (self *Pg) Ping() error {
 }
 
 //创建新的pg对象
-func NewPg() Pginterface{
+func NewPg() Pginterface {
 	return &Pg{}
 }
