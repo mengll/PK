@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package Logs;
+
+//保存访问日志
+message LoginLog {
+    string uid          = 1;
+    string game_id      = 2;
+    int32  ts           = 3;
+    string ip           = 4;
+    string message_id   = 5;
+    string data         = 6;
+    map<string,string> dat  = 7;
+    repeated string msga   = 8; //这是一个数组
+}
+
+message Logback {
+    string error_code   = 1;
+    string msg          = 2;
+}
+
+//流式的操作
+service Logs {
+    rpc AddLoginLog(LoginLog) returns(Logback){}
+}
+
+//定义了枚举类型

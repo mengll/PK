@@ -1,9 +1,11 @@
 package db
 
 import (
-	"github.com/go-redis/redis"
+	"smallgamepk.qcwanwan.com/config"
 	"strconv"
 	"time"
+
+	"github.com/go-redis/redis"
 )
 
 type (
@@ -20,12 +22,13 @@ type (
 		SMembers(k string) ([]string, error)
 		Expire(k string, t time.Duration) error
 		EXISTS(k string) (bool, error)
+		Incr(k string) error
 	}
 
 	GsRedisManage struct {
-		Address   string
-		Passworld string
-		DB        int
+		Address   string `json:"address"`
+		Passworld string `json:"password"`
+		DB        int    `json:"db"`
 		RS        *redis.Client
 	}
 )
@@ -90,6 +93,10 @@ func (this *GsRedisManage) GetSetNum(key string) int {
 	return dd
 }
 
+func (this *GsRedisManage) Incr(k string) error{
+	return this.RS.Incr(k).Err()
+}
+
 //设置可以的实效时间
 func (this *GsRedisManage) Expire(k string, t time.Duration) error {
 	this.SetKey(k, 1)
@@ -110,14 +117,19 @@ func (this *GsRedisManage) EXISTS(k string) (bool, error) {
 	}
 
 	return false, nil
+
 }
 
-//生成当前redis 对象
+
+func(this *GsRedisManage)Clearn(){
+	this.RS.Del("*")
+}
+
+//NewRedis 生成当前redis 对象
 func NewRedis() GsRedis {
 	redis_client := new(GsRedisManage)
-	redis_client.Address = "192.168.1.246:6379"
-	redis_client.Passworld = ""
-	redis_client.DB = 1
-	redis_client.Connect()
+	if err := config.Get("redis", redis_client); err != nil {
+		panic(err)
+	}
 	return redis_client
 }

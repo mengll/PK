@@ -19,7 +19,6 @@ var (
 	Pf_redis      = db.NewRedis()
 	CancelFuc = make(map[string] chan int)
 	UidRooms = make(map[string]string)
-
 	ShareRoom = make(map[string]bool)
 )
 
@@ -152,8 +151,6 @@ func (c *Client) SearchMatch(dat *common.ReqDat) error{
 	}
 
 	//广播
-
-
 	return nil
 }
 

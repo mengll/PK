@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package Pk;
+
+message UserInfo {
+    string uid  = 1; //当前的用户的uid
+    int32  card = 2; //当前使用的卡券的id
+}
+
+//返回的用户信息
+message BackInfo{
+    string error_code = 1;
+    string data       = 2;
+    string msg        = 3;
+}
+
+message BackErr{
+    string error_code = 1;
+    string msg        = 2;
+}
+
+//游戏结果处理
+message GameResult {
+    string game_id    = 1;
+    string uid        = 2;
+    string score      = 3;
+    string text       = 4;
+    string extra      = 5;
+    string room       = 6;
+    int32  ts         = 7;
+    string message_id = 8;
+    string type       = 9;
+}
+
+//定义用户信息
+message UserInfo {
+    string uid          = 1;
+    string nick_name    = 2;
+    string avatar       = 3;
+    uint32 birth_day    = 4;
+    string gender       = 5;
+    int32  ts           = 6;
+    string ip           = 7;
+}
+
+//message
+message UserToken {
+    string user_token = 1;
+}
+
+
+//定义Pkserver
+service Pkgame {
+    rpc  AddCard(UserInfo)      returns(BackInfo){}     //获胜添加卡券
+    rpc  GetUserInfo(UserToken) returns(UserInfo){}     //返回用户信息
+    rpc  UserAdd(UserInfo)      returns(BackErr){}             //新注册的用户添加
+}
